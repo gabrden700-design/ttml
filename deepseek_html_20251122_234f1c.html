@@ -1,0 +1,1786 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>talk with a star // label</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="https://i.ibb.co/tT30TS26/IMG-9166.png" as="image">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style">
+    
+    <style>
+        :root {
+            --bg-color: #000000;
+            --card-bg: rgba(25, 25, 35, 0.9);
+            --card-bg-light: rgba(40, 40, 50, 0.9);
+            --primary: #c0c0c0;
+            --primary-dark: #a0a0a0;
+            --primary-light: #e0e0e0;
+            --accent: #d0d0d0;
+            --text: #ffffff;
+            --text-secondary: #cccccc;
+            --text-muted: #888888;
+            --border: #444444;
+            --success: #4CAF50;
+            --error: #f44336;
+            --warning: #ff9800;
+            --glow: 0 0 15px rgba(192, 192, 192, 0.3);
+            --glass: rgba(255, 255, 255, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: var(--bg-color);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* Cosmic Background with Starfall */
+        .stars-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: starfall linear infinite;
+        }
+        
+        @keyframes starfall {
+            0% {
+                transform: translateY(-100px) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) translateX(100px);
+                opacity: 0;
+            }
+        }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            z-index: 1;
+            padding: 16px;
+        }
+        
+        .screen {
+            display: none;
+            width: 100%;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .screen.active {
+            display: block;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 32px;
+            padding-top: 16px;
+        }
+        
+        .logo {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: var(--glow);
+            border: 3px solid var(--primary);
+            animation: float 6s ease-in-out infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(25, 25, 35, 0.8);
+            backdrop-filter: blur(10px);
+            position: relative;
+        }
+        
+        .logo::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                135deg,
+                rgba(255, 255, 255, 0.1) 0%,
+                transparent 30%,
+                transparent 70%,
+                rgba(255, 255, 255, 0.1) 100%
+            );
+            border-radius: 50%;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+            color: var(--primary);
+            font-weight: 700;
+            text-transform: lowercase;
+            text-shadow: 0 0 10px rgba(192, 192, 192, 0.5);
+        }
+        
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        
+        .card {
+            background: linear-gradient(145deg, var(--card-bg) 0%, var(--card-bg-light) 100%);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(15px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                135deg, 
+                rgba(255, 255, 255, 0.05) 0%, 
+                rgba(255, 255, 255, 0.02) 100%
+            );
+            z-index: -1;
+            border-radius: 20px;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 15px;
+            color: var(--text-secondary);
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text);
+            font-size: 16px;
+            transition: all 0.3s ease;
+            -webkit-appearance: none;
+            backdrop-filter: blur(10px);
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(192, 192, 192, 0.2);
+        }
+        
+        textarea {
+            min-height: 140px;
+            resize: vertical;
+            line-height: 1.5;
+        }
+        
+        .file-upload {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 32px 24px;
+            border: 2px dashed var(--border);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .file-upload:hover {
+            border-color: var(--primary);
+            background: rgba(192, 192, 192, 0.05);
+        }
+        
+        .file-upload i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            color: var(--primary);
+            transition: transform 0.3s ease;
+        }
+        
+        .file-upload:hover i {
+            transform: scale(1.1);
+        }
+        
+        .file-input {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+        
+        .file-info {
+            margin-top: 12px;
+            font-size: 14px;
+            color: var(--text-muted);
+            text-align: center;
+        }
+        
+        .btn {
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: #000;
+            border: none;
+            border-radius: 14px;
+            padding: 18px 24px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+            box-shadow: 0 4px 15px rgba(192, 192, 192, 0.3);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            backdrop-filter: blur(10px);
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-light) 0%, var(--primary) 100%);
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .btn:hover::before {
+            opacity: 1;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(192, 192, 192, 0.4);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .btn:disabled {
+            background: #333;
+            color: #777;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .btn:disabled::before {
+            display: none;
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid var(--border);
+            color: var(--text-secondary);
+            box-shadow: none;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--primary);
+            color: var(--text);
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin-top: 16px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 4px;
+        }
+        
+        .status {
+            margin-top: 20px;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 15px;
+            display: none;
+            align-items: center;
+            gap: 12px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .status i {
+            font-size: 20px;
+        }
+        
+        .status.success {
+            background-color: rgba(76, 175, 80, 0.15);
+            border: 1px solid var(--success);
+            display: flex;
+        }
+        
+        .status.error {
+            background-color: rgba(244, 67, 54, 0.15);
+            border: 1px solid var(--error);
+            display: flex;
+        }
+        
+        .status.warning {
+            background-color: rgba(255, 152, 0, 0.15);
+            border: 1px solid var(--warning);
+            display: flex;
+        }
+        
+        .lyrics-timing {
+            margin-top: 20px;
+        }
+        
+        .timing-controls {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .timing-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 16px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 15px;
+            flex: 1;
+            min-width: 140px;
+            transition: all 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+        
+        .timing-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
+        }
+        
+        .timing-btn:active {
+            transform: translateY(1px);
+        }
+        
+        .timing-btn.primary {
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
+            border: none;
+            color: #000;
+            box-shadow: 0 4px 15px rgba(192, 192, 192, 0.3);
+        }
+        
+        .timing-btn.primary:hover {
+            box-shadow: 0 7px 20px rgba(192, 192, 192, 0.4);
+        }
+        
+        .timing-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .current-line {
+            background: linear-gradient(145deg, rgba(192, 192, 192, 0.1) 0%, rgba(224, 224, 224, 0.05) 100%);
+            padding: 24px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 20px;
+            line-height: 1.5;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(192, 192, 192, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+        
+        .current-line.recording {
+            animation: pulse 1s infinite alternate;
+        }
+        
+        @keyframes pulse {
+            from { box-shadow: 0 0 0 0 rgba(192, 192, 192, 0.4); }
+            to { box-shadow: 0 0 0 10px rgba(192, 192, 192, 0); }
+        }
+        
+        .time-display {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 16px;
+            color: var(--text-secondary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .time-display i {
+            color: var(--primary);
+        }
+        
+        .lyrics-progress {
+            margin: 20px 0;
+        }
+        
+        .lyrics-progress-text {
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .lyrics-progress-bar {
+            height: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .lyrics-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 4px;
+        }
+        
+        .navigation {
+            display: flex;
+            gap: 16px;
+            margin-top: 24px;
+        }
+        
+        .navigation .btn {
+            flex: 1;
+        }
+        
+        /* Splash Screen */
+        #splashScreen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+            padding: 20px;
+            background: var(--bg-color);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+        
+        .splash-logo {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-bottom: 32px;
+            box-shadow: var(--glow);
+            border: 3px solid var(--primary);
+            animation: float 6s ease-in-out infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(25, 25, 35, 0.8);
+            backdrop-filter: blur(10px);
+            position: relative;
+        }
+        
+        .splash-logo::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                135deg,
+                rgba(255, 255, 255, 0.1) 0%,
+                transparent 30%,
+                transparent 70%,
+                rgba(255, 255, 255, 0.1) 100%
+            );
+            border-radius: 50%;
+        }
+        
+        .splash-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        /* Audio Player */
+        .audio-player {
+            margin: 24px 0;
+        }
+        
+        .player-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        
+        .play-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+            box-shadow: 0 5px 15px rgba(192, 192, 192, 0.4);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+        
+        .play-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .play-btn i {
+            color: #000;
+            font-size: 24px;
+            margin-left: 2px;
+        }
+        
+        .time-slider {
+            flex: 1;
+            margin: 0 20px;
+            -webkit-appearance: none;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            outline: none;
+        }
+        
+        .time-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(192, 192, 192, 0.5);
+            transition: all 0.2s ease;
+        }
+        
+        .time-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+        
+        .volume-control {
+            display: flex;
+            align-items: center;
+            margin-top: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 10px 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .volume-slider {
+            flex: 1;
+            margin-left: 12px;
+            -webkit-appearance: none;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            outline: none;
+        }
+        
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+        }
+        
+        /* Instructions */
+        .instructions {
+            margin-top: 24px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            border-left: 4px solid var(--primary);
+            backdrop-filter: blur(10px);
+        }
+        
+        .instructions h3 {
+            margin-bottom: 12px;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .instructions h3 i {
+            color: var(--primary);
+        }
+        
+        .instructions ol {
+            padding-left: 20px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        
+        .instructions li {
+            margin-bottom: 10px;
+        }
+        
+        .instructions strong {
+            color: var(--text);
+        }
+        
+        .instruction-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 16px;
+        }
+        
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        .checkbox-container input {
+            width: 16px;
+            height: 16px;
+        }
+        
+        /* Beat indicator */
+        .beat-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin: 16px 0;
+        }
+        
+        .beat {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: background 0.3s ease;
+        }
+        
+        .beat.active {
+            background: var(--primary);
+            box-shadow: 0 0 10px var(--primary);
+        }
+        
+        /* Progress visualization */
+        .progress-visualization {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .progress-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .progress-bar-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .progress-bar-main {
+            flex: 1;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 4px;
+        }
+        
+        .progress-percent {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary);
+            min-width: 45px;
+            text-align: right;
+        }
+        
+        /* Full lyrics display */
+        .full-lyrics {
+            margin: 20px 0;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            backdrop-filter: blur(10px);
+        }
+        
+        .lyrics-line {
+            padding: 8px 12px;
+            margin: 4px 0;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            line-height: 1.5;
+            cursor: pointer;
+        }
+        
+        .lyrics-line:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+        
+        .lyrics-line.current {
+            background: rgba(192, 192, 192, 0.15);
+            border-left: 3px solid var(--primary);
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+        
+        .lyrics-line.recorded {
+            color: var(--success);
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 8px;
+            }
+            
+            .card {
+                padding: 20px;
+            }
+            
+            .timing-controls {
+                flex-direction: column;
+            }
+            
+            .timing-btn {
+                min-width: 100%;
+            }
+            
+            .navigation {
+                flex-direction: column;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .current-line {
+                font-size: 18px;
+                padding: 20px;
+            }
+        }
+
+        /* Fast loading optimizations */
+        .critical-css {
+            opacity: 0;
+            animation: fadeIn 0.3s ease forwards;
+            animation-delay: 0.1s;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.1);
+            border-left: 4px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Recording line duration indicator */
+        .duration-indicator {
+            height: 4px;
+            background: var(--primary);
+            width: 0%;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            transition: width 0.1s linear;
+        }
+    </style>
+</head>
+<body>
+    <!-- Cosmic Background with Starfall -->
+    <div class="stars-container" id="starsContainer"></div>
+
+    <!-- Splash Screen -->
+    <div id="splashScreen" class="screen active">
+        <div class="splash-logo">
+            <img src="https://i.ibb.co/tT30TS26/IMG-9166.png" alt="talk with a star // label logo" loading="eager">
+        </div>
+        <h1>talk with a star // label</h1>
+        <p class="subtitle">Подготовка вашего трека к релизу</p>
+        <div class="progress-bar" style="margin-top: 40px; width: 200px;">
+            <div class="progress" id="splashProgress"></div>
+        </div>
+    </div>
+
+    <!-- Form Screen -->
+    <div class="container">
+        <div id="formScreen" class="screen critical-css">
+            <header>
+                <div class="logo">
+                    <img src="https://i.ibb.co/tT30TS26/IMG-9166.png" alt="talk with a star // label logo" loading="eager">
+                </div>
+                <h1>talk with a star // label</h1>
+                <p class="subtitle">Заполните данные о вашем релизе</p>
+            </header>
+            
+            <div class="card">
+                <div class="form-group">
+                    <label for="artistName"><i class="fas fa-user"></i> Имена артистов</label>
+                    <input type="text" id="artistName" placeholder="Введите имена артистов">
+                </div>
+                
+                <div class="form-group">
+                    <label for="trackName"><i class="fas fa-heading"></i> Название трека</label>
+                    <input type="text" id="trackName" placeholder="Введите название трека">
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-file-audio"></i> Загрузите аудиофайл</label>
+                    <div class="file-upload" id="audioUpload">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Нажмите для загрузки трека</span>
+                        <span class="file-info">Поддерживаются форматы: MP3, WAV (макс. 50 МБ)</span>
+                        <input type="file" class="file-input" id="audioFile" accept=".mp3,.wav">
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress" id="audioProgress"></div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="lyrics"><i class="fas fa-align-left"></i> Текст песни</label>
+                    <textarea id="lyrics" placeholder="Введите текст песни построчно..."></textarea>
+                </div>
+                
+                <div class="navigation">
+                    <button class="btn" id="nextBtn" disabled>Далее <i class="fas fa-arrow-right"></i></button>
+                </div>
+                
+                <div class="status" id="statusMessage">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Сообщение о статусе</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sync Screen -->
+        <div id="syncScreen" class="screen critical-css">
+            <header>
+                <h1>Синхронизация Текста</h1>
+                <p class="subtitle">Синхронизируйте текст с музыкой для создания караоке</p>
+            </header>
+            
+            <div class="card">
+                <div class="audio-player">
+                    <div class="player-controls">
+                        <button class="play-btn" id="playPauseBtn">
+                            <i id="playIcon" class="fas fa-play"></i>
+                        </button>
+                        <input type="range" class="time-slider" id="timeSlider" min="0" max="100" value="0">
+                        <span id="currentTime">0:00</span>
+                    </div>
+                    <div class="volume-control">
+                        <i class="fas fa-volume-up"></i>
+                        <input type="range" class="volume-slider" id="volumeSlider" min="0" max="100" value="80">
+                    </div>
+                </div>
+                
+                <div class="beat-indicator" id="beatIndicator">
+                    <div class="beat" id="beat1"></div>
+                    <div class="beat" id="beat2"></div>
+                    <div class="beat" id="beat3"></div>
+                    <div class="beat" id="beat4"></div>
+                </div>
+                
+                <div class="progress-visualization">
+                    <div class="progress-text">
+                        <span>Прогресс синхронизации:</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-main">
+                            <div class="progress-bar-fill" id="progressBarFill"></div>
+                        </div>
+                        <div class="progress-percent" id="progressPercent">0%</div>
+                    </div>
+                </div>
+                
+                <div class="lyrics-timing">
+                    <div class="current-line" id="currentLine">
+                        Начните воспроизведение, чтобы начать синхронизацию
+                        <div class="duration-indicator" id="durationIndicator"></div>
+                    </div>
+                    
+                    <div class="time-display">
+                        <i class="fas fa-clock"></i>
+                        Текущее время: <span id="currentTimeDisplay">0:00</span>
+                    </div>
+                    
+                    <div class="lyrics-progress">
+                        <div class="lyrics-progress-text">
+                            <span>Строка <span id="currentLineNumber">0</span> из <span id="totalLines">0</span></span>
+                        </div>
+                        <div class="lyrics-progress-bar">
+                            <div class="lyrics-progress-fill" id="lyricsProgressFill"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="timing-controls">
+                        <button class="timing-btn primary" id="recordLineBtn">
+                            <i class="fas fa-circle"></i> <span id="recordBtnText">Записать строку</span>
+                        </button>
+                        <button class="timing-btn" id="prevLineBtn">
+                            <i class="fas fa-arrow-left"></i> Предыдущая
+                        </button>
+                        <button class="timing-btn" id="resetBtn">
+                            <i class="fas fa-redo"></i> Сбросить
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="full-lyrics" id="fullLyrics">
+                    <!-- Full lyrics will be displayed here -->
+                </div>
+                
+                <div class="instructions" id="instructionsPanel">
+                    <h3><i class="fas fa-info-circle"></i> Инструкция по синхронизации</h3>
+                    <ol>
+                        <li>Начните воспроизведение трека кнопкой <strong>▶</strong></li>
+                        <li>Внимательно слушайте музыку и следите за индикатором битов</li>
+                        <li>Когда услышите начало строки, нажмите и удерживайте кнопку <strong>"Записать строку"</strong></li>
+                        <li>Отпустите кнопку в конце строки - длительность будет зафиксирована</li>
+                        <li>Продолжайте для каждой следующей строки</li>
+                        <li>Следите за прогрессом синхронизации вверху экрана</li>
+                        <li>Если ошиблись, используйте кнопку <strong>"Предыдущая"</strong> для возврата</li>
+                        <li>После записи всех строк нажмите <strong>"Скачать TTML"</strong> для получения файла караоке</li>
+                        <li>TTML файл будет содержать временные метки для каждой строки текста в формате, подходящем для стриминговых сервисов</li>
+                    </ol>
+                    <div class="instruction-actions">
+                        <div class="checkbox-container">
+                            <input type="checkbox" id="dontShowAgain">
+                            <label for="dontShowAgain">Не показывать снова</label>
+                        </div>
+                        <button class="btn" id="closeInstruction">
+                            Хорошо <i class="fas fa-check"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="navigation">
+                    <button class="btn btn-secondary" id="backBtn">
+                        <i class="fas fa-arrow-left"></i> Назад
+                    </button>
+                    <button class="btn" id="generateBtn" disabled>
+                        <i class="fas fa-file-download"></i> Скачать TTML
+                    </button>
+                </div>
+                
+                <div class="status" id="syncStatusMessage">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Сообщение о статусе синхронизации</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Инициализация Telegram Web App
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.enableClosingConfirmation();
+        
+        // Создание звездопада
+        function createStarfall() {
+            const starsContainer = document.getElementById('starsContainer');
+            const starCount = 100;
+            
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                
+                // Случайные размеры, позиции и скорость
+                const size = Math.random() * 3;
+                const left = Math.random() * 100;
+                const duration = 5 + Math.random() * 10;
+                const delay = Math.random() * 10;
+                
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.left = `${left}%`;
+                star.style.animationDuration = `${duration}s`;
+                star.style.animationDelay = `${delay}s`;
+                
+                starsContainer.appendChild(star);
+            }
+        }
+        
+        // Элементы DOM
+        const splashScreen = document.getElementById('splashScreen');
+        const formScreen = document.getElementById('formScreen');
+        const syncScreen = document.getElementById('syncScreen');
+        const splashProgress = document.getElementById('splashProgress');
+        
+        const audioFileInput = document.getElementById('audioFile');
+        const audioProgress = document.getElementById('audioProgress');
+        const artistNameInput = document.getElementById('artistName');
+        const trackNameInput = document.getElementById('trackName');
+        const lyricsInput = document.getElementById('lyrics');
+        const nextBtn = document.getElementById('nextBtn');
+        const statusMessage = document.getElementById('statusMessage');
+        
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const playIcon = document.getElementById('playIcon');
+        const timeSlider = document.getElementById('timeSlider');
+        const currentTime = document.getElementById('currentTime');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const currentLine = document.getElementById('currentLine');
+        const currentTimeDisplay = document.getElementById('currentTimeDisplay');
+        const currentLineNumber = document.getElementById('currentLineNumber');
+        const totalLines = document.getElementById('totalLines');
+        const lyricsProgressFill = document.getElementById('lyricsProgressFill');
+        const progressPercent = document.getElementById('progressPercent');
+        const progressBarFill = document.getElementById('progressBarFill');
+        const recordLineBtn = document.getElementById('recordLineBtn');
+        const prevLineBtn = document.getElementById('prevLineBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const backBtn = document.getElementById('backBtn');
+        const generateBtn = document.getElementById('generateBtn');
+        const syncStatusMessage = document.getElementById('syncStatusMessage');
+        const beatIndicator = document.getElementById('beatIndicator');
+        const beat1 = document.getElementById('beat1');
+        const beat2 = document.getElementById('beat2');
+        const beat3 = document.getElementById('beat3');
+        const beat4 = document.getElementById('beat4');
+        const instructionsPanel = document.getElementById('instructionsPanel');
+        const dontShowAgainCheckbox = document.getElementById('dontShowAgain');
+        const closeInstructionBtn = document.getElementById('closeInstruction');
+        const fullLyrics = document.getElementById('fullLyrics');
+        const durationIndicator = document.getElementById('durationIndicator');
+        const recordBtnText = document.getElementById('recordBtnText');
+        
+        // Переменные состояния
+        let audioFile = null;
+        let audioElement = null;
+        let isPlaying = false;
+        let lyricsLines = [];
+        let currentLineIndex = 0;
+        let timings = [];
+        let isSeeking = false;
+        let beatInterval = null;
+        let currentBeat = 0;
+        let isRecording = false;
+        let recordingStartTime = 0;
+        let recordingInterval = null;
+        let recordingDuration = 0;
+        
+        // Создание звездопада
+        createStarfall();
+        
+        // Проверка, нужно ли показывать инструкцию
+        function shouldShowInstructions() {
+            return localStorage.getItem('hideInstructions') !== 'true';
+        }
+        
+        // Сохранение настройки показа инструкции
+        function saveInstructionPreference() {
+            if (dontShowAgainCheckbox.checked) {
+                localStorage.setItem('hideInstructions', 'true');
+            }
+        }
+        
+        // Ускоренная загрузка приложения
+        function initializeApp() {
+            // Сразу создаем звездопад
+            createStarfall();
+            
+            // Быстрая инициализация Telegram Web App
+            if (window.Telegram && window.Telegram.WebApp) {
+                const tg = window.Telegram.WebApp;
+                tg.expand();
+                tg.ready();
+            }
+            
+            // Ускоренная загрузка основного экрана
+            setTimeout(() => {
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += 10; // Увеличиваем скорость загрузки
+                    splashProgress.style.width = progress + '%';
+                    
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                        splashScreen.classList.remove('active');
+                        formScreen.classList.add('active');
+                        
+                        // Убираем сплеш-экран из DOM после скрытия
+                        setTimeout(() => {
+                            splashScreen.style.display = 'none';
+                        }, 500);
+                        
+                        // Предзагрузка следующего экрана
+                        preloadSyncScreen();
+                    }
+                }, 20); // Уменьшаем интервал для более быстрой анимации
+            }, 800); // Уменьшаем начальную задержку
+        }
+        
+        // Предзагрузка экрана синхронизации
+        function preloadSyncScreen() {
+            // Создаем элементы заранее для быстрого перехода
+            const syncElements = document.querySelectorAll('#syncScreen .critical-css');
+            syncElements.forEach(el => {
+                el.style.willChange = 'transform, opacity';
+            });
+        }
+        
+        // Запускаем приложение сразу после загрузки DOM
+        document.addEventListener('DOMContentLoaded', initializeApp);
+        
+        // Обработчик загрузки аудиофайла
+        audioFileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                // Проверка типа файла
+                if (!file.type.match('audio.*')) {
+                    showStatus('Пожалуйста, загрузите аудиофайл (MP3 или WAV)', 'error');
+                    return;
+                }
+                
+                // Проверка размера файла (макс. 50 МБ)
+                if (file.size > 50 * 1024 * 1024) {
+                    showStatus('Файл слишком большой. Максимальный размер: 50 МБ', 'error');
+                    return;
+                }
+                
+                audioFile = file;
+                
+                // Быстрая имитация прогресса загрузки
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += 20; // Увеличиваем скорость
+                    audioProgress.style.width = progress + '%';
+                    
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                        showStatus('Аудиофайл успешно загружен!', 'success');
+                        
+                        // Создаем аудио элемент для воспроизведения
+                        audioElement = new Audio(URL.createObjectURL(file));
+                        setupAudioPlayer();
+                        
+                        checkFormValidity();
+                    }
+                }, 30);
+            }
+        });
+        
+        // Настройка аудиоплеера
+        function setupAudioPlayer() {
+            if (!audioElement) return;
+            
+            // Обработчик изменения времени
+            audioElement.addEventListener('timeupdate', function() {
+                if (!isSeeking) {
+                    const progress = (audioElement.currentTime / audioElement.duration) * 100;
+                    timeSlider.value = progress;
+                    currentTime.textContent = formatTime(audioElement.currentTime);
+                    currentTimeDisplay.textContent = formatTime(audioElement.currentTime);
+                }
+            });
+            
+            // Обработчик окончания воспроизведения
+            audioElement.addEventListener('ended', function() {
+                isPlaying = false;
+                playIcon.className = 'fas fa-play';
+                stopBeatAnimation();
+            });
+            
+            // Обработчик громкости
+            volumeSlider.addEventListener('input', function() {
+                audioElement.volume = volumeSlider.value / 100;
+            });
+            
+            // Обработчик перемотки
+            timeSlider.addEventListener('input', function() {
+                isSeeking = true;
+                const seekTime = (timeSlider.value / 100) * audioElement.duration;
+                currentTime.textContent = formatTime(seekTime);
+                currentTimeDisplay.textContent = formatTime(seekTime);
+            });
+            
+            timeSlider.addEventListener('change', function() {
+                const seekTime = (timeSlider.value / 100) * audioElement.duration;
+                audioElement.currentTime = seekTime;
+                isSeeking = false;
+            });
+            
+            // Обработчик касания для мобильных устройств
+            timeSlider.addEventListener('touchstart', function() {
+                isSeeking = true;
+            });
+            
+            timeSlider.addEventListener('touchend', function() {
+                const seekTime = (timeSlider.value / 100) * audioElement.duration;
+                audioElement.currentTime = seekTime;
+                isSeeking = false;
+            });
+            
+            // Устанавливаем начальную громкость
+            audioElement.volume = volumeSlider.value / 100;
+        }
+        
+        // Отображение полного текста песни
+        function displayFullLyrics() {
+            fullLyrics.innerHTML = '';
+            
+            lyricsLines.forEach((line, index) => {
+                const lineElement = document.createElement('div');
+                lineElement.classList.add('lyrics-line');
+                lineElement.textContent = line;
+                lineElement.dataset.index = index;
+                
+                // Если это текущая строка, выделяем ее
+                if (index === currentLineIndex) {
+                    lineElement.classList.add('current');
+                }
+                
+                // Если строка уже записана, отмечаем ее
+                if (index < currentLineIndex) {
+                    lineElement.classList.add('recorded');
+                }
+                
+                // Добавляем обработчик клика
+                lineElement.addEventListener('click', function() {
+                    const clickedIndex = parseInt(this.dataset.index);
+                    
+                    // Если строка уже записана, перематываем к ней
+                    if (clickedIndex < currentLineIndex) {
+                        // Перематываем аудио к времени этой строки
+                        audioElement.currentTime = timings[clickedIndex].startTime;
+                        
+                        // Устанавливаем текущую строку
+                        currentLineIndex = clickedIndex;
+                        
+                        // Удаляем все записи после этой строки
+                        timings = timings.slice(0, clickedIndex);
+                        
+                        // Обновляем отображение
+                        updateLyricsDisplay();
+                        
+                        // Показываем сообщение
+                        showSyncStatus(`Начинаем с строки ${clickedIndex + 1}`, 'success');
+                    }
+                    // Если это текущая строка, ничего не делаем
+                    // Если это будущая строка, игнорируем
+                });
+                
+                fullLyrics.appendChild(lineElement);
+            });
+            
+            // Прокручиваем к текущей строке
+            const currentLineElement = fullLyrics.querySelector('.lyrics-line.current');
+            if (currentLineElement) {
+                currentLineElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+        
+        // Запуск анимации битов
+        function startBeatAnimation() {
+            currentBeat = 0;
+            beatInterval = setInterval(() => {
+                // Сбрасываем все биты
+                beat1.classList.remove('active');
+                beat2.classList.remove('active');
+                beat3.classList.remove('active');
+                beat4.classList.remove('active');
+                
+                // Активируем текущий бит
+                if (currentBeat === 0) beat1.classList.add('active');
+                else if (currentBeat === 1) beat2.classList.add('active');
+                else if (currentBeat === 2) beat3.classList.add('active');
+                else if (currentBeat === 3) beat4.classList.add('active');
+                
+                // Переходим к следующему биту
+                currentBeat = (currentBeat + 1) % 4;
+            }, 500); // 120 BPM
+        }
+        
+        // Остановка анимации битов
+        function stopBeatAnimation() {
+            if (beatInterval) {
+                clearInterval(beatInterval);
+                beatInterval = null;
+            }
+            beat1.classList.remove('active');
+            beat2.classList.remove('active');
+            beat3.classList.remove('active');
+            beat4.classList.remove('active');
+        }
+        
+        // Воспроизведение/пауза
+        playPauseBtn.addEventListener('click', function() {
+            if (!audioElement) return;
+            
+            if (isPlaying) {
+                audioElement.pause();
+                playIcon.className = 'fas fa-play';
+                stopBeatAnimation();
+            } else {
+                audioElement.play().catch(e => {
+                    showSyncStatus('Нажмите на экран для активации аудио', 'error');
+                });
+                playIcon.className = 'fas fa-pause';
+                startBeatAnimation();
+            }
+            
+            isPlaying = !isPlaying;
+        });
+        
+        // Начало записи строки
+        function startRecording() {
+            if (!audioElement || lyricsLines.length === 0 || isRecording) return;
+            
+            isRecording = true;
+            recordingStartTime = audioElement.currentTime;
+            recordingDuration = 0;
+            
+            // Обновляем интерфейс
+            recordLineBtn.classList.add('recording');
+            recordBtnText.textContent = 'Запись...';
+            currentLine.classList.add('recording');
+            
+            // Запускаем обновление индикатора длительности
+            recordingInterval = setInterval(() => {
+                recordingDuration = audioElement.currentTime - recordingStartTime;
+                const maxDuration = 10; // Максимальная длительность строки в секундах
+                const progress = Math.min((recordingDuration / maxDuration) * 100, 100);
+                durationIndicator.style.width = progress + '%';
+            }, 100);
+        }
+        
+        // Завершение записи строки
+        function stopRecording() {
+            if (!isRecording) return;
+            
+            isRecording = false;
+            clearInterval(recordingInterval);
+            
+            const endTime = audioElement.currentTime;
+            
+            // Сохраняем время для текущей строки
+            timings.push({
+                line: lyricsLines[currentLineIndex],
+                startTime: recordingStartTime,
+                endTime: endTime,
+                duration: recordingDuration
+            });
+            
+            // Сбрасываем индикатор
+            durationIndicator.style.width = '0%';
+            recordLineBtn.classList.remove('recording');
+            recordBtnText.textContent = 'Записать строку';
+            currentLine.classList.remove('recording');
+            
+            // Переходим к следующей строке
+            currentLineIndex++;
+            updateLyricsDisplay();
+            
+            if (currentLineIndex >= lyricsLines.length) {
+                recordLineBtn.disabled = true;
+                showSyncStatus('Все строки синхронизированы!', 'success');
+                generateBtn.disabled = false;
+            }
+        }
+        
+        // Обработчики для кнопки записи строки (мышь)
+        recordLineBtn.addEventListener('mousedown', function() {
+            startRecording();
+        });
+        
+        recordLineBtn.addEventListener('mouseup', function() {
+            stopRecording();
+        });
+        
+        recordLineBtn.addEventListener('mouseleave', function() {
+            if (isRecording) {
+                stopRecording();
+            }
+        });
+        
+        // Обработчики для кнопки записи строки (тач)
+        recordLineBtn.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+            startRecording();
+        });
+        
+        recordLineBtn.addEventListener('touchend', function(e) {
+            e.preventDefault();
+            stopRecording();
+        });
+        
+        // Предыдущая строка
+        prevLineBtn.addEventListener('click', function() {
+            if (currentLineIndex > 0) {
+                currentLineIndex--;
+                timings.pop(); // Удаляем последнюю временную метку
+                updateLyricsDisplay();
+                recordLineBtn.disabled = false;
+                generateBtn.disabled = true;
+                showSyncStatus('Возврат к предыдущей строке', 'warning');
+            }
+        });
+        
+        // Сброс синхронизации
+        resetBtn.addEventListener('click', function() {
+            currentLineIndex = 0;
+            timings = [];
+            updateLyricsDisplay();
+            recordLineBtn.disabled = false;
+            generateBtn.disabled = true;
+            showSyncStatus('Синхронизация сброшена', 'success');
+        });
+        
+        // Обновление отображения текста
+        function updateLyricsDisplay() {
+            if (lyricsLines.length > 0 && currentLineIndex < lyricsLines.length) {
+                currentLine.textContent = lyricsLines[currentLineIndex];
+                currentLineNumber.textContent = currentLineIndex + 1;
+                totalLines.textContent = lyricsLines.length;
+                const progress = ((currentLineIndex) / lyricsLines.length) * 100;
+                lyricsProgressFill.style.width = progress + '%';
+                progressBarFill.style.width = progress + '%';
+                progressPercent.textContent = Math.round(progress) + '%';
+                
+                // Обновляем полный текст
+                displayFullLyrics();
+            } else if (currentLineIndex >= lyricsLines.length) {
+                currentLine.textContent = "Все строки синхронизированы!";
+                currentLineNumber.textContent = lyricsLines.length;
+                totalLines.textContent = lyricsLines.length;
+                lyricsProgressFill.style.width = '100%';
+                progressBarFill.style.width = '100%';
+                progressPercent.textContent = '100%';
+                
+                // Обновляем полный текст
+                displayFullLyrics();
+            }
+        }
+        
+        // Проверка валидности формы
+        function checkFormValidity() {
+            const isFormValid = artistNameInput.value.trim() !== '' && 
+                               trackNameInput.value.trim() !== '' && 
+                               lyricsInput.value.trim() !== '' && 
+                               audioFile !== null;
+            
+            nextBtn.disabled = !isFormValid;
+        }
+        
+        // Отслеживание изменений в полях формы
+        artistNameInput.addEventListener('input', checkFormValidity);
+        trackNameInput.addEventListener('input', checkFormValidity);
+        lyricsInput.addEventListener('input', function() {
+            checkFormValidity();
+            // Разбиваем текст на строки
+            lyricsLines = lyricsInput.value.split('\n').filter(line => line.trim() !== '');
+            updateLyricsDisplay();
+        });
+        
+        // Переход к экрану синхронизации
+        nextBtn.addEventListener('click', function() {
+            formScreen.classList.remove('active');
+            syncScreen.classList.add('active');
+            
+            // Разбиваем текст на строки
+            lyricsLines = lyricsInput.value.split('\n').filter(line => line.trim() !== '');
+            updateLyricsDisplay();
+            
+            // Показываем инструкцию, если нужно
+            if (shouldShowInstructions()) {
+                instructionsPanel.style.display = 'block';
+            } else {
+                instructionsPanel.style.display = 'none';
+            }
+        });
+        
+        // Закрытие инструкции
+        closeInstructionBtn.addEventListener('click', function() {
+            saveInstructionPreference();
+            instructionsPanel.style.display = 'none';
+        });
+        
+        // Возврат к форме
+        backBtn.addEventListener('click', function() {
+            syncScreen.classList.remove('active');
+            formScreen.classList.add('active');
+            
+            // Останавливаем воспроизведение при возврате
+            if (audioElement && isPlaying) {
+                audioElement.pause();
+                isPlaying = false;
+                playIcon.className = 'fas fa-play';
+                stopBeatAnimation();
+            }
+        });
+        
+        // Форматирование времени
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+        
+        // Генерация TTML файла
+        function generateTTML() {
+            const artist = artistNameInput.value.trim();
+            const title = trackNameInput.value.trim();
+            
+            let ttmlContent = `<?xml version="1.0" encoding="UTF-8"?>
+<tt xmlns="http://www.w3.org/ns/ttml" xmlns:tts="http://www.w3.org/ns/ttml#styling">
+<head>
+    <metadata>
+        <ttm:title>${title}</ttm:title>
+        <ttm:artist>${artist}</ttm:artist>
+    </metadata>
+    <styling>
+        <style id="s1" tts:color="white" tts:fontFamily="Arial" tts:fontSize="22"/>
+    </styling>
+</head>
+<body>
+    <div>
+`;
+            
+            timings.forEach((timing) => {
+                ttmlContent += `        <p begin="${formatTTMLTime(timing.startTime)}" end="${formatTTMLTime(timing.endTime)}" style="s1">${timing.line}</p>\n`;
+            });
+            
+            ttmlContent += `    </div>
+</body>
+</tt>`;
+            
+            return ttmlContent;
+        }
+        
+        // Форматирование времени для TTML
+        function formatTTMLTime(seconds) {
+            const hours = Math.floor(seconds / 3600);
+            const minutes = Math.floor((seconds % 3600) / 60);
+            const secs = seconds % 60;
+            const ms = Math.floor((secs % 1) * 1000);
+            
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${Math.floor(secs).toString().padStart(2, '0')}.${ms.toString().padStart(3, '0')}`;
+        }
+        
+        // Показ статуса на форме
+        function showStatus(message, type) {
+            statusMessage.querySelector('span').textContent = message;
+            statusMessage.className = 'status ' + type;
+            
+            // Устанавливаем соответствующую иконку
+            const icon = statusMessage.querySelector('i');
+            if (type === 'success') icon.className = 'fas fa-check-circle';
+            else if (type === 'error') icon.className = 'fas fa-exclamation-circle';
+            else if (type === 'warning') icon.className = 'fas fa-exclamation-triangle';
+            else icon.className = 'fas fa-info-circle';
+        }
+        
+        // Показ статуса на экране синхронизации
+        function showSyncStatus(message, type) {
+            syncStatusMessage.querySelector('span').textContent = message;
+            syncStatusMessage.className = 'status ' + type;
+            
+            // Устанавливаем соответствующую иконку
+            const icon = syncStatusMessage.querySelector('i');
+            if (type === 'success') icon.className = 'fas fa-check-circle';
+            else if (type === 'error') icon.className = 'fas fa-exclamation-circle';
+            else if (type === 'warning') icon.className = 'fas fa-exclamation-triangle';
+            else icon.className = 'fas fa-info-circle';
+        }
+        
+        // Обработчик кнопки генерации
+        generateBtn.addEventListener('click', function() {
+            if (!audioFile) {
+                showSyncStatus('Пожалуйста, загрузите аудиофайл', 'error');
+                return;
+            }
+            
+            showSyncStatus('Генерируем TTML файл...', 'success');
+            
+            // Генерация TTML
+            const ttmlContent = generateTTML();
+            const ttmlBlob = new Blob([ttmlContent], { type: 'application/ttml+xml' });
+            const ttmlUrl = URL.createObjectURL(ttmlBlob);
+            
+            // Создание имени файла
+            const artist = artistNameInput.value.trim().replace(/[^a-zA-Zа-яА-Я0-9\s]/g, '');
+            const title = trackNameInput.value.trim().replace(/[^a-zA-Zа-яА-Я0-9\s]/g, '');
+            const filename = `${artist}_${title}_// караоке TTML.ttml`;
+            
+            // Создание ссылки для скачивания
+            const downloadLink = document.createElement('a');
+            downloadLink.href = ttmlUrl;
+            downloadLink.download = filename;
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+            
+            // Освобождаем URL
+            setTimeout(() => {
+                URL.revokeObjectURL(ttmlUrl);
+                showSyncStatus('TTML файл успешно скачан!', 'success');
+            }, 100);
+            
+            // Отправка данных в Telegram бота
+            const formData = {
+                artist: artistNameInput.value,
+                title: trackNameInput.value,
+                hasAudio: true,
+                hasLyrics: true,
+                hasKaraoke: timings.length > 0
+            };
+            
+            tg.sendData(JSON.stringify(formData));
+        });
+        
+        // Активация аудио по первому касанию (для мобильных устройств)
+        document.addEventListener('touchstart', function() {
+            if (audioElement && audioElement.paused) {
+                // Создаем и сразу останавливаем короткое воспроизведение для активации
+                const silentAudio = new Audio("data:audio/wav;base64,UklGRnoAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoAAAC");
+                silentAudio.play().then(() => {
+                    silentAudio.pause();
+                    silentAudio.currentTime = 0;
+                });
+            }
+        }, { once: true });
+    </script>
+</body>
+</html>
