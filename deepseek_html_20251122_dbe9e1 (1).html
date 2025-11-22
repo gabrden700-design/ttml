@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>talk with a star // label</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Preload critical resources -->
+    <link rel="preload" href="https://i.ibb.co/tT30TS26/IMG-9166.png" as="image">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style">
+    
+    <style>
+        :root {
+            --bg-color: #000000;
+            --card-bg: rgba(25, 25, 35, 0.9);
+            --card-bg-light: rgba(40, 40, 50, 0.9);
+            --primary: #c0c0c0;
+            --primary-dark: #a0a0a0;
+            --primary-light: #e0e0e0;
+            --accent: #d0d0d0;
+            --text: #ffffff;
+            --text-secondary: #cccccc;
+            --text-muted: #888888;
+            --border: #444444;
+            --success: #4CAF50;
+            --error: #f44336;
+            --warning: #ff9800;
+            --glow: 0 0 15px rgba(192, 192, 192, 0.3);
+            --glass: rgba(255, 255, 255, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: var(--bg-color);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            padding-bottom: 80px; /* Space for bottom navigation */
+        }
+        
+        /* Cosmic Background with Starfall */
+        .stars-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: starfall linear infinite;
+        }
+        
+        @keyframes starfall {
+            0% {
+                transform: translateY(-100px) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) translateX(100px);
+                opacity: 0;
+            }
+        }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            z-index: 1;
+            padding: 16px;
+        }
+        
+        .screen {
+            display: none;
+            width: 100%;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .screen.active {
+            display: block;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 32px;
+            padding-top: 16px;
+        }
+        
+        .logo {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: var(--glow);
+            border: 3px solid var(--primary);
+            animation: float 6s ease-in-out infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(25, 25, 35, 0.8);
+            backdrop-filter: blur(10px);
+            position: relative;
+        }
+        
+        .logo::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                135deg,
+                rgba(255, 255, 255, 0.1) 0%,
+                transparent 30%,
+                transparent 70%,
+                rgba(255, 255, 255, 0.1) 100%
+            );
+            border-radius: 50%;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+            color: var(--primary);
+            font-weight: 700;
+            text-transform: lowercase;
+            text-shadow: 0 0 10px rgba(192, 192, 192, 0.5);
+        }
+        
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        
+        .card {
+            background: linear-gradient(145deg, var(--card-bg) 0%, var(--card-bg-light) 100%);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(15px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                135deg, 
+                rgba(255, 255, 255, 0.05) 0%, 
+                rgba(255, 255, 255, 0.02) 100%
+            );
+            z-index: -1;
+            border-radius: 20px;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 15px;
+            color: var(--text-secondary);
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text);
+            font-size: 16px;
+            transition: all 0.3s ease;
+            -webkit-appearance: none;
+            backdrop-filter: blur(10px);
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(192, 192, 192, 0.2);
+        }
+        
+        textarea {
+            min-height: 140px;
+            resize: vertical;
+            line-height: 1.5;
+        }
+        
+        .file-upload {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 32px 24px;
+            border: 2px dashed var(--border);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+        
+        .file-upload:hover {
+            border-color: var(--primary);
+            background: rgba(192, 192, 192, 0.05);
+        }
+        
+        .file-upload i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            color: var(--primary);
+            transition: transform 0.3s ease;
+        }
+        
+        .file-upload:hover i {
+            transform: scale(1.1);
+        }
+        
+        .file-input {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+        
+        .file-info {
+            margin-top: 12px;
+            font-size: 14px;
+            color: var(--text-muted);
+            text-align: center;
+        }
+        
+        .btn {
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: #000;
+            border: none;
+            border-radius: 14px;
+            padding: 18px 24px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
+            box-shadow: 0 4px 15px rgba(192, 192, 192, 0.3);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            backdrop-filter: blur(10px);
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-light) 0%, var(--primary) 100%);
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .btn:hover::before {
+            opacity: 1;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(192, 192, 192, 0.4);
+        }
+        
+        .btn:active {
+            transform: translateY(1px);
+        }
+        
+        .btn:disabled {
+            background: #333;
+            color: #777;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .btn:disabled::before {
+            display: none;
+        }
+        
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid var(--border);
+            color: var(--text-secondary);
+            box-shadow: none;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--primary);
+            color: var(--text);
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin-top: 16px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 4px;
+        }
+        
+        .status {
+            margin-top: 20px;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 15px;
+            display: none;
+            align-items: center;
+            gap: 12px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .status i {
+            font-size: 20px;
+        }
+        
+        .status.success {
+            background-color: rgba(76, 175, 80, 0.15);
+            border: 1px solid var(--success);
+            display: flex;
+        }
+        
+        .status.error {
+            background-color: rgba(244, 67, 54, 0.15);
+            border: 1px solid var(--error);
+            display: flex;
+        }
+        
+        .status.warning {
+            background-color: rgba(255, 152, 0, 0.15);
+            border: 1px solid var(--warning);
+            display: flex;
+        }
+        
+        .navigation {
+            display: flex;
+            gap: 16px;
+            margin-top: 24px;
+        }
+        
+        .navigation .btn {
+            flex: 1;
+        }
+        
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(25, 25, 35, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            z-index: 1000;
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            max-width: 80px;
+        }
+        
+        .nav-item.active {
+            background: rgba(192, 192, 192, 0.1);
+        }
+        
+        .nav-item:hover {
+            background: rgba(192, 192, 192, 0.1);
+        }
+        
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 4px;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item.active .nav-icon {
+            color: var(--primary);
+            transform: scale(1.1);
+        }
+        
+        .nav-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item.active .nav-label {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-top: 20px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(145deg, var(--card-bg) 0%, var(--card-bg-light) 100%);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid var(--border);
+            text-align: center;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        
+        /* Services Grid */
+        .services-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            margin-top: 24px;
+        }
+        
+        .service-card {
+            padding: 20px;
+            background: linear-gradient(145deg, var(--card-bg) 0%, var(--card-bg-light) 100%);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            border-color: var(--primary);
+        }
+        
+        .service-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+            font-size: 28px;
+            margin-bottom: 16px;
+        }
+        
+        .service-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+        
+        .service-description {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+        
+        /* Tools Grid */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            margin-top: 24px;
+        }
+        
+        .tool-card {
+            padding: 20px;
+            background: linear-gradient(145deg, var(--card-bg) 0%, var(--card-bg-light) 100%);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .tool-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+            border-color: var(--primary);
+        }
+        
+        .tool-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+            font-size: 28px;
+            margin-bottom: 16px;
+        }
+        
+        .tool-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+        
+        .tool-description {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+        
+        /* BPM Analysis Specific Styles */
+        .bpm-results {
+            margin-top: 24px;
+            display: none;
+        }
+        
+        .bpm-result-card {
+            background: linear-gradient(145deg, var(--card-bg) 0%, var(--card-bg-light) 100%);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid var(--border);
+            margin-bottom: 16px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        
+        .bpm-result-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+        }
+        
+        .bpm-value {
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 16px;
+            text-shadow: 0 0 10px rgba(192, 192, 192, 0.3);
+        }
+        
+        .key-results {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+        }
+        
+        .key-result {
+            flex: 1;
+            text-align: center;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+        
+        .key-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+        
+        .key-value {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .camelot-wheel {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto;
+            position: relative;
+            border-radius: 50%;
+            background: conic-gradient(
+                from 0deg,
+                #ff0000, #ff8000, #ffff00, #80ff00, 
+                #00ff00, #00ff80, #00ffff, #0080ff, 
+                #0000ff, #8000ff, #ff00ff, #ff0080, #ff0000
+            );
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+            box-shadow: 0 0 20px rgba(192, 192, 192, 0.2);
+        }
+        
+        .camelot-inner {
+            width: 120px;
+            height: 120px;
+            background: var(--card-bg);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 24px;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .analysis-progress {
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .progress-text {
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+        
+        /* Back button */
+        .back-button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            color: var(--primary);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .back-button:hover {
+            transform: translateX(-5px);
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 32px;
+            padding: 20px;
+            color: var(--text-muted);
+            font-size: 14px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <!-- Cosmic Background with Starfall -->
+    <div class="stars-container" id="starsContainer"></div>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Home Screen -->
+        <div id="homeScreen" class="screen active">
+            <header>
+                <div class="logo">
+                    <img src="https://i.ibb.co/tT30TS26/IMG-9166.png" alt="talk with a star // label logo" loading="eager">
+                </div>
+                <h1>talk with a star // label</h1>
+                <p class="subtitle">Платформа для артистов и музыкантов</p>
+            </header>
+            
+            <div class="card">
+                <h2 style="margin-bottom: 16px;">Добро пожаловать!</h2>
+                <p style="line-height: 1.6; margin-bottom: 20px;">
+                    Мы помогаем артистам развивать карьеру, предоставляя полный спектр услуг 
+                    от создания музыки до продвижения и монетизации.
+                </p>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">1,250+</div>
+                        <div class="stat-label">Артистов</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">5,400+</div>
+                        <div class="stat-label">Релизов</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">2.5M+</div>
+                        <div class="stat-label">Прослушиваний</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">$850K+</div>
+                        <div class="stat-label">Выплат</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer">
+                <p>Подписывайтесь на наш Telegram канал: <a href="https://t.me/twaslabel" target="_blank">@twaslabel</a></p>
+            </div>
+        </div>
+
+        <!-- Services Screen -->
+        <div id="servicesScreen" class="screen">
+            <header>
+                <h1>Наши услуги</h1>
+                <p class="subtitle">Профессиональные услуги для развития вашей карьеры</p>
+            </header>
+            
+            <div class="card">
+                <div class="services-grid">
+                    <div class="service-card">
+                        <div class="service-icon">
+                            <i class="fas fa-record-vinyl"></i>
+                        </div>
+                        <div class="service-title">Запись и продакшн</div>
+                        <div class="service-description">
+                            Профессиональная запись, сведение и мастеринг ваших треков в студиях мирового уровня.
+                        </div>
+                        <button class="btn">Узнать больше</button>
+                    </div>
+                    
+                    <div class="service-card">
+                        <div class="service-icon">
+                            <i class="fas fa-compact-disc"></i>
+                        </div>
+                        <div class="service-title">Дистрибуция</div>
+                        <div class="service-description">
+                            Распространение вашей музыки на всех основных стриминговых платформах по всему миру.
+                        </div>
+                        <button class="btn">Узнать больше</button>
+                    </div>
+                    
+                    <div class="service-card">
+                        <div class="service-icon">
+                            <i class="fas fa-video"></i>
+                        </div>
+                        <div class="service-title">Видеопродакшн</div>
+                        <div class="service-description">
+                            Создание качественных музыкальных видео и визуального контента для продвижения.
+                        </div>
+                        <button class="btn">Узнать больше</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tools Screen -->
+        <div id="toolsScreen" class="screen">
+            <header>
+                <h1>Наши сервисы</h1>
+                <p class="subtitle">Бесплатные инструменты для вашего творчества</p>
+            </header>
+            
+            <div class="card">
+                <div class="tools-grid">
+                    <div class="tool-card">
+                        <div class="tool-icon">
+                            <i class="fas fa-headphones"></i>
+                        </div>
+                        <div class="tool-title">Синхронизация текста</div>
+                        <div class="tool-description">
+                            Создание караоке-версий ваших треков с синхронизированным текстом для стриминговых платформ.
+                        </div>
+                        <button class="btn" data-screen="syncScreen">Использовать сервис</button>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon">
+                            <i class="fas fa-tachometer-alt"></i>
+                        </div>
+                        <div class="tool-title">Анализ BPM и тональности</div>
+                        <div class="tool-description">
+                            Определите BPM, тональность и код Camelot вашего трека для лучшего микширования.
+                        </div>
+                        <button class="btn" data-screen="bpmAnalysisScreen">Использовать сервис</button>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="tool-title">Генератор метаданных</div>
+                        <div class="tool-description">
+                            Автоматическое создание корректных метаданных для дистрибуции на стриминговые платформы.
+                        </div>
+                        <button class="btn" disabled>Скоро будет доступно</button>
+                    </div>
+                    
+                    <div class="tool-card">
+                        <div class="tool-icon">
+                            <i class="fas fa-chart-bar"></i>
+                        </div>
+                        <div class="tool-title">Аналитика треков</div>
+                        <div class="tool-description">
+                            Детальный анализ ваших релизов: вовлеченность, демография аудитории и рекомендации.
+                        </div>
+                        <button class="btn" disabled>Скоро будет доступно</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BPM Analysis Screen -->
+        <div id="bpmAnalysisScreen" class="screen">
+            <div class="back-button" data-screen="toolsScreen">
+                <i class="fas fa-arrow-left"></i> Назад
+            </div>
+            
+            <header>
+                <h1>Анализ BPM и тональности</h1>
+                <p class="subtitle">Определите BPM, тональность и код Camelot вашего трека</p>
+            </header>
+            
+            <div class="card">
+                <div class="form-group">
+                    <label for="bpmAudioUrl"><i class="fas fa-link"></i> Ссылка на аудио</label>
+                    <input type="text" id="bpmAudioUrl" placeholder="Введите ссылку на аудио (YouTube, SoundCloud, Spotify)">
+                    <button class="btn" id="analyzeUrlBtn" style="margin-top: 16px;">Анализировать по ссылке</button>
+                </div>
+                
+                <div class="form-group">
+                    <label><i class="fas fa-file-audio"></i> Или загрузите аудиофайл</label>
+                    <div class="file-upload" id="bpmAudioUpload">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <span>Нажмите для загрузки трека</span>
+                        <span class="file-info">Поддерживаются форматы: MP3, WAV, FLAC (макс. 50 МБ)</span>
+                        <input type="file" class="file-input" id="bpmAudioFile" accept=".mp3,.wav,.flac">
+                    </div>
+                    <button class="btn" id="analyzeFileBtn" style="margin-top: 16px;" disabled>Анализировать файл</button>
+                </div>
+                
+                <div class="analysis-progress" id="bpmAnalysisProgress" style="display: none;">
+                    <div class="progress-text">Анализируем аудио...</div>
+                    <div class="progress-bar">
+                        <div class="progress" id="bpmProgressBar"></div>
+                    </div>
+                </div>
+                
+                <div class="bpm-results" id="bpmResults">
+                    <h3 style="margin-bottom: 16px; text-align: center;">Результаты анализа</h3>
+                    
+                    <div class="bpm-result-card">
+                        <div class="bpm-value" id="bpmValue">120</div>
+                        <div style="text-align: center; color: var(--text-secondary);">ударов в минуту</div>
+                    </div>
+                    
+                    <div class="key-results">
+                        <div class="key-result">
+                            <div class="key-label">Тональность</div>
+                            <div class="key-value" id="keyValue">C мажор</div>
+                        </div>
+                        <div class="key-result">
+                            <div class="key-label">Код Camelot</div>
+                            <div class="key-value" id="camelotValue">8B</div>
+                        </div>
+                    </div>
+                    
+                    <div class="camelot-wheel">
+                        <div class="camelot-inner" id="camelotWheelValue">8B</div>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 20px; color: var(--text-secondary);">
+                        <p>Совместимые тональности: <strong id="compatibleKeys">5A, 7A, 8A, 8B</strong></p>
+                    </div>
+                </div>
+                
+                <div class="status" id="bpmStatusMessage">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Сообщение о статусе анализа</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Finance Screen -->
+        <div id="financeScreen" class="screen">
+            <header>
+                <h1>Финансы</h1>
+                <p class="subtitle">Управление доходами и роялти</p>
+            </header>
+            
+            <div class="card">
+                <h2 style="margin-bottom: 16px;">Финансовый обзор</h2>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value">$2,450</div>
+                        <div class="stat-label">Доход за месяц</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">$18,750</div>
+                        <div class="stat-label">Доход за год</div>
+                    </div>
+                </div>
+                
+                <div class="navigation" style="margin-top: 24px;">
+                    <button class="btn">
+                        <i class="fas fa-file-download"></i> Экспорт отчетов
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Screen -->
+        <div id="profileScreen" class="screen">
+            <header>
+                <h1>Профиль</h1>
+                <p class="subtitle">Управление вашим аккаунтом</p>
+            </header>
+            
+            <div class="card">
+                <div style="display: flex; align-items: center; margin-bottom: 24px;">
+                    <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); display: flex; align-items: center; justify-content: center; margin-right: 16px;">
+                        <i class="fas fa-user" style="font-size: 32px; color: #000;"></i>
+                    </div>
+                    <div>
+                        <h2 style="margin-bottom: 4px;">Иван Иванов</h2>
+                        <p style="color: var(--text-secondary);">Артист • Москва</p>
+                    </div>
+                </div>
+                
+                <div class="navigation">
+                    <button class="btn">
+                        <i class="fas fa-save"></i> Сохранить изменения
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <div class="bottom-nav">
+        <div class="nav-item active" data-screen="homeScreen">
+            <div class="nav-icon">
+                <i class="fas fa-home"></i>
+            </div>
+            <div class="nav-label">Главная</div>
+        </div>
+        <div class="nav-item" data-screen="servicesScreen">
+            <div class="nav-icon">
+                <i class="fas fa-concierge-bell"></i>
+            </div>
+            <div class="nav-label">Услуги</div>
+        </div>
+        <div class="nav-item" data-screen="toolsScreen">
+            <div class="nav-icon">
+                <i class="fas fa-tools"></i>
+            </div>
+            <div class="nav-label">Сервисы</div>
+        </div>
+        <div class="nav-item" data-screen="financeScreen">
+            <div class="nav-icon">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="nav-label">Финансы</div>
+        </div>
+        <div class="nav-item" data-screen="profileScreen">
+            <div class="nav-icon">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="nav-label">Профиль</div>
+        </div>
+    </div>
+
+    <script>
+        // Инициализация Telegram Web App
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.enableClosingConfirmation();
+        
+        // Создание звездопада
+        function createStarfall() {
+            const starsContainer = document.getElementById('starsContainer');
+            const starCount = 150;
+            
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.classList.add('star');
+                
+                // Равномерное распределение по всей высоте
+                const size = Math.random() * 2 + 1;
+                const left = Math.random() * 100;
+                const top = Math.random() * 100;
+                const duration = 3 + Math.random() * 7;
+                const delay = Math.random() * 5;
+                
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                star.style.left = `${left}%`;
+                star.style.top = `${top}%`;
+                star.style.animationDuration = `${duration}s`;
+                star.style.animationDelay = `${delay}s`;
+                
+                starsContainer.appendChild(star);
+            }
+        }
+        
+        // Элементы DOM
+        const homeScreen = document.getElementById('homeScreen');
+        const servicesScreen = document.getElementById('servicesScreen');
+        const toolsScreen = document.getElementById('toolsScreen');
+        const financeScreen = document.getElementById('financeScreen');
+        const profileScreen = document.getElementById('profileScreen');
+        const bpmAnalysisScreen = document.getElementById('bpmAnalysisScreen');
+        
+        // Элементы для анализа BPM
+        const bpmAudioUrl = document.getElementById('bpmAudioUrl');
+        const analyzeUrlBtn = document.getElementById('analyzeUrlBtn');
+        const bpmAudioFile = document.getElementById('bpmAudioFile');
+        const analyzeFileBtn = document.getElementById('analyzeFileBtn');
+        const bpmAnalysisProgress = document.getElementById('bpmAnalysisProgress');
+        const bpmProgressBar = document.getElementById('bpmProgressBar');
+        const bpmResults = document.getElementById('bpmResults');
+        const bpmValue = document.getElementById('bpmValue');
+        const keyValue = document.getElementById('keyValue');
+        const camelotValue = document.getElementById('camelotValue');
+        const camelotWheelValue = document.getElementById('camelotWheelValue');
+        const compatibleKeys = document.getElementById('compatibleKeys');
+        const bpmStatusMessage = document.getElementById('bpmStatusMessage');
+        
+        // Создание звездопада
+        createStarfall();
+        
+        // Навигация между экранами
+        function navigateToScreen(screenId) {
+            // Скрываем все экраны
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            
+            // Показываем целевой экран
+            document.getElementById(screenId).classList.add('active');
+            
+            // Обновляем активный пункт в нижнем меню
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Активируем соответствующий пункт меню
+            const navItem = document.querySelector(`.nav-item[data-screen="${screenId}"]`);
+            if (navItem) {
+                navItem.classList.add('active');
+            }
+        }
+        
+        // Обработчики для нижнего меню
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const targetScreen = this.getAttribute('data-screen');
+                navigateToScreen(targetScreen);
+            });
+        });
+        
+        // Обработчики для кнопок назад
+        document.querySelectorAll('.back-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const targetScreen = this.getAttribute('data-screen');
+                navigateToScreen(targetScreen);
+            });
+        });
+        
+        // Обработчики для кнопок в сервисах
+        document.querySelectorAll('.btn[data-screen]').forEach(button => {
+            button.addEventListener('click', function() {
+                const targetScreen = this.getAttribute('data-screen');
+                navigateToScreen(targetScreen);
+            });
+        });
+        
+        // Запускаем приложение сразу после загрузки DOM
+        document.addEventListener('DOMContentLoaded', function() {
+            // Показываем главный экран сразу
+            navigateToScreen('homeScreen');
+        });
+        
+        // Обработчик для активации кнопки анализа файла
+        bpmAudioFile.addEventListener('change', function() {
+            analyzeFileBtn.disabled = !this.files.length;
+        });
+        
+        // Обработчик для анализа по URL
+        analyzeUrlBtn.addEventListener('click', function() {
+            const url = bpmAudioUrl.value.trim();
+            if (!url) {
+                showBpmStatus('Введите ссылку на аудио', 'error');
+                return;
+            }
+            
+            // Проверяем, является ли URL валидным
+            if (!isValidUrl(url)) {
+                showBpmStatus('Введите корректную ссылку', 'error');
+                return;
+            }
+            
+            startBpmAnalysis();
+        });
+        
+        // Обработчик для анализа файла
+        analyzeFileBtn.addEventListener('click', function() {
+            if (!bpmAudioFile.files.length) {
+                showBpmStatus('Выберите файл', 'error');
+                return;
+            }
+            
+            const file = bpmAudioFile.files[0];
+            
+            // Проверка типа файла
+            if (!file.type.match('audio.*')) {
+                showBpmStatus('Пожалуйста, загрузите аудиофайл (MP3, WAV или FLAC)', 'error');
+                return;
+            }
+            
+            // Проверка размера файла (макс. 50 МБ)
+            if (file.size > 50 * 1024 * 1024) {
+                showBpmStatus('Файл слишком большой. Максимальный размер: 50 МБ', 'error');
+                return;
+            }
+            
+            startBpmAnalysis();
+        });
+        
+        // Функция для запуска анализа BPM
+        function startBpmAnalysis() {
+            // Скрываем предыдущие результаты
+            bpmResults.style.display = 'none';
+            
+            // Показываем прогресс
+            bpmAnalysisProgress.style.display = 'block';
+            bpmProgressBar.style.width = '0%';
+            showBpmStatus('Начинаем анализ аудио...', 'success');
+            
+            // Имитация прогресса анализа
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 5;
+                bpmProgressBar.style.width = progress + '%';
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    // Завершаем анализ и показываем результаты
+                    simulateBpmAnalysisResult();
+                    bpmAnalysisProgress.style.display = 'none';
+                    bpmResults.style.display = 'block';
+                    showBpmStatus('Анализ завершен успешно!', 'success');
+                }
+            }, 100);
+        }
+        
+        // Функция для имитации результатов анализа BPM
+        function simulateBpmAnalysisResult() {
+            // Случайный BPM от 60 до 180
+            const bpm = Math.floor(Math.random() * 120) + 60;
+            
+            // Список возможных тональностей и кодов Camelot
+            const keys = [
+                { name: 'C мажор', camelot: '8B', compatible: '5A, 7A, 8A, 10A' },
+                { name: 'C минор', camelot: '5A', compatible: '3A, 5A, 7A, 8A' },
+                { name: 'C# мажор', camelot: '3B', compatible: '12B, 2B, 3B, 5B' },
+                { name: 'C# минор', camelot: '12A', compatible: '10A, 12A, 2A, 3A' },
+                { name: 'D мажор', camelot: '10B', compatible: '8B, 10B, 12B, 2B' },
+                { name: 'D минор', camelot: '7A', compatible: '5A, 7A, 9A, 10A' },
+                { name: 'D# мажор', camelot: '5B', compatible: '3B, 5B, 7B, 8B' },
+                { name: 'D# минор', camelot: '2A', compatible: '12A, 2A, 4A, 5A' },
+                { name: 'E мажор', camelot: '12B', compatible: '10B, 12B, 2B, 4B' },
+                { name: 'E минор', camelot: '9A', compatible: '7A, 9A, 11A, 12A' },
+                { name: 'F мажор', camelot: '7B', compatible: '5B, 7B, 9B, 10B' },
+                { name: 'F минор', camelot: '4A', compatible: '2A, 4A, 6A, 7A' },
+                { name: 'F# мажор', camelot: '2B', compatible: '12B, 2B, 4B, 6B' },
+                { name: 'F# минор', camelot: '11A', compatible: '9A, 11A, 1A, 2A' },
+                { name: 'G мажор', camelot: '9B', compatible: '7B, 9B, 11B, 12B' },
+                { name: 'G минор', camelot: '6A', compatible: '4A, 6A, 8A, 9A' },
+                { name: 'G# мажор', camelot: '4B', compatible: '2B, 4B, 6B, 8B' },
+                { name: 'G# минор', camelot: '1A', compatible: '11A, 1A, 3A, 4A' },
+                { name: 'A мажор', camelot: '11B', compatible: '9B, 11B, 1B, 2B' },
+                { name: 'A минор', camelot: '8A', compatible: '6A, 8A, 10A, 11A' },
+                { name: 'A# мажор', camelot: '6B', compatible: '4B, 6B, 8B, 10B' },
+                { name: 'A# минор', camelot: '3A', compatible: '1A, 3A, 5A, 6A' },
+                { name: 'B мажор', camelot: '1B', compatible: '11B, 1B, 3B, 4B' },
+                { name: 'B минор', camelot: '10A', compatible: '8A, 10A, 12A, 1A' }
+            ];
+            
+            // Случайный выбор тональности
+            const randomKey = keys[Math.floor(Math.random() * keys.length)];
+            
+            // Обновляем DOM с результатами
+            bpmValue.textContent = bpm;
+            keyValue.textContent = randomKey.name;
+            camelotValue.textContent = randomKey.camelot;
+            camelotWheelValue.textContent = randomKey.camelot;
+            compatibleKeys.textContent = randomKey.compatible;
+        }
+        
+        // Функция для проверки валидности URL
+        function isValidUrl(string) {
+            try {
+                new URL(string);
+                return true;
+            } catch (_) {
+                return false;
+            }
+        }
+        
+        // Функция для показа статуса анализа BPM
+        function showBpmStatus(message, type) {
+            bpmStatusMessage.querySelector('span').textContent = message;
+            bpmStatusMessage.className = 'status ' + type;
+            bpmStatusMessage.style.display = 'flex';
+            
+            // Устанавливаем соответствующую иконку
+            const icon = bpmStatusMessage.querySelector('i');
+            if (type === 'success') icon.className = 'fas fa-check-circle';
+            else if (type === 'error') icon.className = 'fas fa-exclamation-circle';
+            else if (type === 'warning') icon.className = 'fas fa-exclamation-triangle';
+            else icon.className = 'fas fa-info-circle';
+        }
+    </script>
+</body>
+</html>
